@@ -42,7 +42,7 @@ android {
         abortOnError false //发生错误也继续打包
     }
 
-    packagingOptions {//用于删除一些可能发生重复文件的
+    packagingOptions {//设置APK包的相关属性，exclude排除排除路径列表
 //        exclude 'project.properties'
 //        exclude 'META-INF/DEPENDENCIES'
 //        exclude 'META-INF/NOTICE'
