@@ -9,25 +9,78 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
+        manifestPlaceholders = [app_label:"@string/app_name"]
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    signingConfigs {
+        test{
+            keyAlias 'key'
+            keyPassword '123456'
+            storeFile file('chengzj.jks')
+            storePassword '123456'
+        }
+    }
+
     buildTypes {
         release {
+            //是否开启混淆
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            useProguard true
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.test
+            manifestPlaceholders = [app_label:"@string/app_name"]
         }
+        debug {
+            minifyEnabled false
+            useProguard false
+            debuggable true
+        }
+    }
+
+    lintOptions {
+        abortOnError false //发生错误也继续打包
+    }
+
+    packagingOptions {//用于删除一些可能发生重复文件的
+//        exclude 'project.properties'
+//        exclude 'META-INF/DEPENDENCIES'
+//        exclude 'META-INF/NOTICE'
+//        exclude 'META-INF/LICENSE'
+//        exclude 'META-INF/LICENSE.txt'
+//        exclude 'META-INF/NOTICE.txt'
+    }
+
+    //生成不同渠道包
+    productFlavors {
+        mock {
+            applicationIdSuffix = ".mock"
+        }
+        prod {
+
+        }
+    }
+
+    //修改生成包的包名
+    android.variantFilter { variant ->
+        if(variant.buildType.name.equals('release')
+                && variant.getFlavors().get(0).name.equals('mock')) {
+            variant.setIgnore(true);
+        }
+    }
+    dexOptions {
+        incremental true //优化编译速度
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
     //支持Gson 及 rxjava
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
@@ -35,11 +88,9 @@ dependencies {
     //rxjava rxandroid
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
     compile 'io.reactivex.rxjava2:rxjava:2.1.0'
-
     compile 'com.squareup.okhttp3:logging-interceptor:3.4.0'
     //eventbus
     compile 'org.greenrobot:eventbus:3.0.0'
-
     compile 'com.jakewharton:butterknife:7.0.1'
     testCompile 'junit:junit:4.12'
 }

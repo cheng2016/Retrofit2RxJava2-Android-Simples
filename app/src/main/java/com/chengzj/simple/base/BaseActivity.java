@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import butterknife.ButterKnife;
+
 /**
  * Created by chengzj on 2017/6/16.
  */
@@ -18,6 +20,7 @@ public abstract class BaseActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
         init(savedInstanceState);
+        ButterKnife.bind(this);
     }
 
     @Override
@@ -32,9 +35,14 @@ public abstract class BaseActivity extends AppCompatActivity{
         EventBus.getDefault().unregister(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ButterKnife.unbind(this);
+    }
+
     @Subscribe
-    public  void onEventMainThread(Object event){
-    };
+    public  void onEventMainThread(Object event){}
 
 
     protected abstract int getLayoutId();
